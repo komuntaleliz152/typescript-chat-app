@@ -1,7 +1,7 @@
 {
-  "name": "chat-backend",
+  "name": "penda-backend",
   "version": "1.0.0",
-  "description": "Real-time chat backend with Socket.IO and MongoDB",
+  "description": "Penda dating app backend with Socket.IO and MongoDB",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

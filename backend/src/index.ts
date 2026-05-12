@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './db/connection';
 import { setupSocketHandlers } from './socket/handlers';
+import Room from './models/Room';
 
 dotenv.config({ path: '../.env' });
 
@@ -25,7 +26,22 @@ app.get('/health', (req, res) => {
 });
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(async () => {
+  // Create default rooms if they don't exist
+  const defaultRooms = [
+    { name: 'general', description: 'General discussion', createdBy: 'system' },
+    { name: 'random', description: 'Random chat', createdBy: 'system' },
+    { name: 'tech', description: 'Technology discussions', createdBy: 'system' },
+  ];
+
+  for (const roomData of defaultRooms) {
+    const exists = await Room.findOne({ name: roomData.name });
+    if (!exists) {
+      await Room.create(roomData);
+      console.log(`Created default room: ${roomData.name}`);
+    }
+  }
+});
 
 // Setup Socket.IO handlers
 setupSocketHandlers(io);
