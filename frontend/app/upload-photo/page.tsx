@@ -2,8 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, Camera, X, Check } from 'lucide-react';
-import Image from 'next/image';
+import { Upload, X } from 'lucide-react';
 
 export default function UploadPhotoPage() {
   const router = useRouter();
@@ -34,9 +33,7 @@ export default function UploadPhotoPage() {
     }
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleContinue = async () => {
     if (!selectedImage) {
       alert('Please select a photo first');
       return;
@@ -49,120 +46,79 @@ export default function UploadPhotoPage() {
       // TODO: Replace with actual API call to upload photo
       console.log('Uploading photo...');
       setIsUploading(false);
-      router.push('/'); // Redirect to main app
+      router.push('/age-preference'); // Go to step 2
     }, 2000);
   };
 
-  const handleSkip = () => {
-    if (confirm('Are you sure you want to skip? Adding a photo increases your chances of getting matches!')) {
-      router.push('/');
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-pink-100">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Camera className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Add Your Best Photo
-          </h1>
-          <p className="text-gray-600">
-            Profiles with photos get 10x more matches!
-          </p>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header with step number */}
+      <div className="text-center pt-12 pb-8">
+        <div className="text-8xl font-bold text-pink-600 mb-8">1</div>
+        <h1 className="text-4xl font-normal text-gray-800">
+          Add your best photo
+        </h1>
+      </div>
+
+      {/* Photo Upload Area */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-32">
+        <div className="relative">
+          {!selectedImage ? (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="w-[500px] h-[500px] bg-white border-2 border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-gray-400 transition-all relative"
+            >
+              {/* Plus button */}
+              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-[500px] h-[500px] rounded-lg overflow-hidden border-2 border-gray-300">
+              <img
+                src={selectedImage}
+                alt="Selected"
+                className="w-full h-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
 
-        <form onSubmit={handleUpload} className="space-y-6">
-          {/* Photo Upload Area */}
-          <div className="relative">
-            {!selectedImage ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-3 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all"
-              >
-                <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-700 font-semibold mb-2">
-                  Click to upload your photo
-                </p>
-                <p className="text-gray-500 text-sm">
-                  JPG, PNG or GIF (Max 5MB)
-                </p>
-              </div>
-            ) : (
-              <div className="relative rounded-2xl overflow-hidden border-4 border-pink-200">
-                <img
-                  src={selectedImage}
-                  alt="Selected"
-                  className="w-full h-96 object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
+        {/* Pro tips - directly below the box */}
+        <p className="text-gray-700 text-center mt-8 max-w-2xl">
+          <span className="font-semibold">Pro tips:</span> Use a bright and clear recent photo just of you. Avoid poor quality, dark or altered images.
+        </p>
+      </div>
+
+      {/* Bottom section with buttons */}
+      <div className="bg-white border-t border-gray-200 py-6 px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Button */}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={handleContinue}
+              disabled={!selectedImage || isUploading}
+              className="px-12 py-3 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 disabled:from-pink-200 disabled:to-rose-200 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+            >
+              {isUploading ? 'Uploading...' : 'Next'}
+            </button>
           </div>
-
-          {/* Photo Guidelines */}
-          <div className="bg-pink-50 rounded-xl p-4 border border-pink-100">
-            <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-              <Check className="w-5 h-5 text-pink-600" />
-              Photo Tips
-            </h3>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li>✓ Clear face photo with good lighting</li>
-              <li>✓ Smile and look friendly</li>
-              <li>✓ Recent photo (within last year)</li>
-              <li>✗ No group photos or sunglasses</li>
-            </ul>
-          </div>
-
-          {/* Upload Button */}
-          <button
-            type="submit"
-            disabled={!selectedImage || isUploading}
-            className="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-          >
-            {isUploading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload className="w-5 h-5" />
-                Continue with Photo
-              </>
-            )}
-          </button>
-
-          {/* Skip Button */}
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="w-full text-gray-600 hover:text-gray-800 py-2 text-sm transition-colors"
-          >
-            Skip for now
-          </button>
-        </form>
-
-        {/* Privacy Note */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-xs text-gray-600 text-center">
-            🔒 Your photo will be reviewed to ensure it meets our community guidelines
-          </p>
         </div>
       </div>
     </div>
